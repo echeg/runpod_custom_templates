@@ -7,6 +7,10 @@ on:
       - master
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - main
+      - master
 
 env:
   REGISTRY: ghcr.io
@@ -15,6 +19,15 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - pytorch: "2.4.0"
+            cuda: "121"
+            cuda_version: "12.1.1"
+          - pytorch: "2.1.0"
+            cuda: "118"
+            cuda_version: "11.8.0"
     permissions:
       contents: read
       packages: write
@@ -22,6 +35,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: List directory contents for debugging
+        run: |
+          echo "Root directory:"
+          ls -la
+          echo "Template directory:"
+          ls -la official-templates/echeg-comfyui/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -40,18 +60,23 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,format=long
+            type=ref,event=branch,suffix=-pytorch${{ matrix.pytorch }}-cuda${{ matrix.cuda }}
+            type=ref,event=pr,suffix=-pytorch${{ matrix.pytorch }}-cuda${{ matrix.cuda }}
+            type=semver,pattern={{version}},suffix=-pytorch${{ matrix.pytorch }}-cuda${{ matrix.cuda }}
+            type=semver,pattern={{major}}.{{minor}},suffix=-pytorch${{ matrix.pytorch }}-cuda${{ matrix.cuda }}
+            type=sha,format=long,suffix=-pytorch${{ matrix.pytorch }}-cuda${{ matrix.cuda }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: official-templates/echeg-comfyui
+          context: .
+          file: ./official-templates/echeg-comfyui/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PYTORCH=${{ matrix.pytorch }}
+            CUDA=${{ matrix.cuda }}
+            CUDA_VERSION=${{ matrix.cuda_version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max 

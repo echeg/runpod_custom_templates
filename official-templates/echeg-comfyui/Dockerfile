@@ -64,19 +64,18 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
     pip install -r requirements.txt
 
 # Create necessary directories and copy necessary files
-RUN set -e && mkdir -p /root/.cache/huggingface && mkdir /comfy-models
-#COPY --from=hf-cache /root/.cache/huggingface /root/.cache/huggingface
+RUN mkdir -p /usr/share/nginx/html
 
 # NGINX Proxy
-COPY build-context/nginx.conf /etc/nginx/nginx.conf
-COPY build-context/readme.html /usr/share/nginx/html/readme.html
+COPY official-templates/echeg-comfyui/build-context/nginx.conf /etc/nginx/nginx.conf
+COPY official-templates/echeg-comfyui/build-context/readme.html /usr/share/nginx/html/readme.html
 
 # Copy the README.md
-COPY README.md /usr/share/nginx/html/README.md
+COPY official-templates/echeg-comfyui/README.md /usr/share/nginx/html/README.md
 
 # Start Scripts
-COPY pre_start.sh /pre_start.sh
-COPY build-context/start.sh /
+COPY official-templates/echeg-comfyui/pre_start.sh /pre_start.sh
+COPY official-templates/echeg-comfyui/build-context/start.sh /
 RUN chmod +x /start.sh
 
 CMD [ "/start.sh" ]
