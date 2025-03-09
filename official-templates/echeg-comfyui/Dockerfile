@@ -4,7 +4,7 @@ ARG UBUNTU_VERSION="22.04"
 ARG PYTORCH="2.4.0"
 ARG CUDA="121"
 
-ARG DOCKER_FROM=nvidia/cuda:$CUDA_VERSION-cudnn$CUDNN_VERSION-devel-ubuntu$UBUNTU_VERSION
+ARG DOCKER_FROM=nvidia/cuda:$CUDA_VERSION-cudnn$CUDNN_VERSION-runtime-ubuntu$UBUNTU_VERSION
 # Import necessary base images
 #FROM runpod/stable-diffusion-models:2.1 as hf-cache
 FROM $DOCKER_FROM AS runtime
