@@ -17,8 +17,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Set working directory and environment variables
 ENV SHELL=/bin/bash
-ENV PYTHONUNBUFFERED=1
+# Prevents prompts from packages asking for user input during installation
 ENV DEBIAN_FRONTEND=noninteractive
+# Prefer binary wheels over source distributions for faster pip installations
+ENV PIP_PREFER_BINARY=1
+# Ensures output from python is printed immediately to the terminal without buffering
+ENV PYTHONUNBUFFERED=1 
+# Speed up some cmake builds
+ENV CMAKE_BUILD_PARALLEL_LEVEL=8
 
 WORKDIR /
 
