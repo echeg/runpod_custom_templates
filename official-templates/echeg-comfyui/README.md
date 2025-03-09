@@ -15,7 +15,7 @@ This is a lightweight version of ComfyUI with CUDA support.
 
 ```bash
 docker pull ghcr.io/<username>/comfyui-lite:latest
-docker run --gpus all -p 8188:8188 -p 8888:8888 ghcr.io/<username>/comfyui-lite:latest
+docker run --gpus all -p 3001:3001 -p 8888:8888 ghcr.io/<username>/comfyui-lite:latest
 ```
 
 ## Build Arguments

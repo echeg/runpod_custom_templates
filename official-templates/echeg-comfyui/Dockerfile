@@ -1,13 +1,15 @@
-ARG CUDA_VERSION="12.1.1"
+ARG CUDA_VERSION="11.8.0"
 ARG CUDNN_VERSION="8"
 ARG UBUNTU_VERSION="22.04"
-ARG PYTORCH="2.4.0"
-ARG CUDA="121"
+ARG PYTORCH="2.0.1"
+ARG CUDA="118"
 
-ARG DOCKER_FROM=nvidia/cuda:$CUDA_VERSION-cudnn$CUDNN_VERSION-runtime-ubuntu$UBUNTU_VERSION
+#ARG DOCKER_FROM=nvidia/cuda:$CUDA_VERSION-cudnn$CUDNN_VERSION-base-ubuntu$UBUNTU_VERSION
+FROM nvidia/cuda:11.8.0-base-ubuntu22.04 as runtime
+
 # Import necessary base images
 #FROM runpod/stable-diffusion-models:2.1 as hf-cache
-FROM $DOCKER_FROM AS runtime
+#FROM $DOCKER_FROM AS runtime
 
 # Повторно объявляем ARG после FROM, чтобы они были доступны в этом этапе сборки
 ARG PYTORCH
@@ -31,7 +33,7 @@ WORKDIR /
 # Set up system
 RUN apt-get update --yes && \
     apt-get upgrade --yes && \
-    apt install --yes --no-install-recommends git wget curl bash libgl1 software-properties-common openssh-server nginx rsync && \
+    apt install --yes --no-install-recommends git wget curl bash libgl1 software-properties-common openssh-server nginx rsync curl && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt install python3.10-dev python3.10-venv -y --no-install-recommends && \
     apt-get autoremove -y && \
@@ -53,7 +55,7 @@ ENV PATH="/venv/bin:$PATH"
 RUN pip install --upgrade --no-cache-dir pip && \
     pip install --upgrade setuptools && \
     pip install --upgrade wheel
-RUN pip install --no-cache-dir torch==${PYTORCH} torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu${CUDA}
+RUN pip install --upgrade --no-cache-dir torch==2.0.1+cu${CUDA} torchvision==0.15.2+cu${CUDA} torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu${CUDA}
 RUN pip install --upgrade --no-cache-dir jupyterlab ipywidgets jupyter-archive jupyter_contrib_nbextensions triton xformers==0.0.22 gdown
 
 # Set up Jupyter Notebook
