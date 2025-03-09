@@ -25,9 +25,6 @@ jobs:
           - pytorch: "2.4.0"
             cuda: "121"
             cuda_version: "12.1.1"
-          - pytorch: "2.1.0"
-            cuda: "118"
-            cuda_version: "11.8.0"
     permissions:
       contents: read
       packages: write
