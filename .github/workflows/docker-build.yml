@@ -71,7 +71,7 @@ jobs:
             type=sha,format=long,suffix=-pytorch${{ matrix.pytorch }}-cuda${{ matrix.cuda }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./official-templates/echeg-comfyui/Dockerfile
